@@ -1,6 +1,7 @@
 package solutions.hedron.simple_calculator;
 
 import android.os.StrictMode;
+import android.support.annotation.IntegerRes;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,8 +11,16 @@ import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
+    public enum Operation{
+        ADD, SUBTRACT, DIVIDE, MULTIPLY, EQUAL
+    }
+
     TextView resultView;
     String currentNumber = "";
+    Operation currentOperation;
+    String leftValue = "";
+    String rightValue = "";
+    int result = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,10 +114,86 @@ public class MainActivity extends AppCompatActivity {
                 numberPressed(0);
             }
         });
+
+        // Operation Button Events
+        addBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                processOperation(Operation.ADD);
+            }
+        });
+        subtractBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                processOperation(Operation.SUBTRACT);
+            }
+        });
+        divideBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                processOperation(Operation.DIVIDE);
+            }
+        });
+        multiplyBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                processOperation(Operation.MULTIPLY);
+            }
+        });
+        equalBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                processOperation(Operation.EQUAL);
+            }
+        });
+
+        clearBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                leftValue = "";
+                rightValue = "";
+                result = 0;
+                currentNumber = "";
+                currentOperation = null;
+                resultView.setText("");
+            }
+        });
     }
 
     void numberPressed(int number){
         currentNumber += String.valueOf(number);
         resultView.setText(currentNumber);
+    }
+
+    void processOperation(Operation operation){
+        if (currentOperation != null){
+            if (currentNumber != ""){
+                rightValue = currentNumber;
+                currentNumber = "";
+
+                switch (currentOperation){
+                    case ADD:
+                        result = Integer.parseInt(leftValue) + Integer.parseInt(rightValue);
+                        break;
+                    case SUBTRACT:
+                        result = Integer.parseInt(leftValue) - Integer.parseInt(rightValue);
+                        break;
+                    case MULTIPLY:
+                        result = Integer.parseInt(leftValue) * Integer.parseInt(rightValue);
+                        break;
+                    case DIVIDE:
+                        result = Integer.parseInt(leftValue) / Integer.parseInt(rightValue);
+                        break;
+                }
+
+                leftValue = String.valueOf(result);
+                resultView.setText(leftValue);
+            }
+        } else {
+            leftValue = currentNumber;
+            currentNumber = "";
+        }
+
+        currentOperation = operation;
     }
 }
